@@ -1,0 +1,12 @@
+{
+  "name": "pointcloud-studio",
+  "private": true,
+  "type": "module",
+  "description": "Spatial-hash point cloud inspector with an exact, node-verifiable core",
+  "scripts": {
+    "gen": "node tools/gen-sample.mjs",
+    "verify": "node bench/verify.mjs",
+    "bench": "node bench/bench.mjs",
+    "serve": "python3 -m http.server 4173"
+  }
+}

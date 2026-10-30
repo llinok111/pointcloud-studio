@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>pointcloud-studio — spatial-hash point cloud inspector</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #05070d; overflow: hidden;
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #c8d4e6; }
+  #app { position: fixed; inset: 0; }
+  canvas { display: block; }
+
+  #hud { position: fixed; top: 16px; left: 16px; width: 292px; padding: 14px 16px;
+    border: 1px solid rgba(120, 170, 255, .16); border-radius: 10px;
+    background: rgba(9, 14, 24, .82); backdrop-filter: blur(8px); pointer-events: none; }
+  #hud h1 { margin: 0 0 2px; font-size: 14px; letter-spacing: .04em; color: #eaf1ff; font-weight: 600; }
+  #hud .sub { margin: 0 0 12px; font-size: 11px; color: #6b7d99; letter-spacing: .02em; }
+  .row { display: flex; justify-content: space-between; gap: 10px; padding: 2px 0; }
+  .row span:first-child { color: #7c8ca6; }
+  .row b { color: #dfe9fb; font-weight: 500; }
+  .sep { height: 1px; margin: 10px 0; background: rgba(120, 170, 255, .12); }
+  #pick { color: #ffb454; }
+  #hint { margin-top: 10px; font-size: 11px; color: #5d6b82; }
+
+  #panel { position: fixed; bottom: 16px; left: 16px; padding: 12px 14px; display: flex;
+    flex-direction: column; gap: 10px; width: 292px;
+    border: 1px solid rgba(120, 170, 255, .16); border-radius: 10px;
+    background: rgba(9, 14, 24, .82); backdrop-filter: blur(8px); }
+  label { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #8b9bb4; }
+  label input[type=range] { flex: 1; accent-color: #4f9dff; }
+  label b { color: #dfe9fb; min-width: 42px; text-align: right; font-weight: 500; }
+  #toggle { align-self: flex-start; padding: 5px 12px; border-radius: 6px; cursor: pointer;
+    border: 1px solid rgba(120, 170, 255, .3); background: rgba(60, 120, 220, .18);
+    color: #cfe0ff; font: inherit; font-size: 12px; }
+  #toggle[aria-pressed="true"] { background: rgba(255, 120, 60, .22); border-color: rgba(255, 140, 80, .5); color: #ffc9a3; }
+
+  #loading { position: fixed; inset: 0; display: grid; place-items: center; background: #05070d;
+    color: #7c8ca6; font-size: 13px; transition: opacity .35s; }
+  #loading.done { opacity: 0; pointer-events: none; }
+  #loading .err { color: #ff8a7a; max-width: 520px; text-align: center; line-height: 1.7; }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="hud">
+  <h1>pointcloud-studio</h1>
+  <p class="sub">uniform spatial hash · exact radius queries</p>
+  <div class="row"><span>points</span><b id="s-total">—</b></div>
+  <div class="row"><span>flagged outliers</span><b id="s-out">—</b></div>
+  <div class="row"><span>mean neighbours</span><b id="s-mean">—</b></div>
+  <div class="sep"></div>
+  <div class="row"><span>last query</span><b id="pick">click the cloud</b></div>
+  <div id="hint">drag to orbit · scroll to zoom · click to query a neighbourhood</div>
+</div>
+
+<div id="panel">
+  <label>radius r <input id="r" type="range" min="0.12" max="0.60" step="0.01" value="0.28" /><b id="r-val">0.28</b></label>
+  <label>min nbrs k <input id="k" type="range" min="1" max="12" step="1" value="4" /><b id="k-val">4</b></label>
+  <button id="toggle" aria-pressed="false">hide outliers</button>
+</div>
+
+<div id="loading"><div>loading 60 000 points…</div></div>
+
+<script type="module" src="./main.js"></script>
+</body>
+</html>
