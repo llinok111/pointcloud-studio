@@ -28,9 +28,11 @@ All numbers below come from `node bench/bench.mjs` on this machine (node v24.19.
 
 | workload | baseline (`baseline/naive.mjs`) | spatial hash | ratio |
 | --- | --- | --- | --- |
-| 2000 radius queries, r=0.28, 60 000 points | **281.58 ms** median (p95 297.70, σ 8.73) | **6.48 ms** median (p95 7.00, σ 0.33) | **43.4×** |
-| same, first call in a fresh process (cold) | 281.58 ms | 16.33 ms | 17.2× |
+| 2000 radius queries, r=0.28, 60 000 points | **281.58 ms** median (p95 297.70) | **6.48 ms** median (p95 7.00) | **43.4×** |
+| grid cold start (first call in a fresh process) | 281.58 ms *(warm median — the baseline is not re-timed cold)* | 16.33 ms | 17.2× vs warm baseline |
 | full outlier pass over all 60 000 points | not run (3.6×10⁹ comparisons) | **71.56 ms** median | — |
+
+Medians and p95 are stable; dispersion is not. Three independent re-runs gave speedup 42.2–43.0×, grid median 6.38–6.55 ms and cold start 16.9–18.4 ms. Per-run σ lives in `bench/result.json` and moves much more than the medians do, so it is not quoted here as a fixed property of the code.
 
 Both paths return the same neighbour sets — the benchmark aborts if the total hit count differs (`48 029` neighbour pairs in both).
 
@@ -57,6 +59,6 @@ The dataset is generated, not scraped: a (2,3) torus-knot tube sampled at 57 000
 
 - **Recall is 0.861, not 1.0.** Density thresholding cannot separate a stray point that landed *on* the tube from a real surface point; those 418 misses are the honest cost of a radius/k heuristic. Precision is high (6 false positives) because surface density (~25 neighbours) sits far above the k=4 threshold.
 - **The 43.4× figure is for 2 000 queries**, the interactive path (click-to-query, box selection). A full 60 000×60 000 pass is not benchmarked against the baseline because it would take minutes; the grid-only pass is reported separately at 71.6 ms.
-- **Cold start is 2.5× slower than steady state** (16.3 ms vs 6.5 ms) due to JIT warm-up; the cold number is reported rather than hidden.
+- **Cold start is ~2.5–2.8× slower than steady state** (16.9–18.4 ms vs 6.4–6.5 ms across re-runs) due to JIT warm-up; the cold number is reported rather than hidden. The baseline is never timed cold, so the 17.2× cold figure is a warm-baseline comparison and is labelled as such.
 - The grid allocates one cell array sized to the bounding box; cell count is capped at 8×10⁶ and the cell size is grown automatically past that.
 - Browser-side timings shown in the HUD are indicative only. No browser automation is used anywhere in this repo, and no screenshot is evidence.
