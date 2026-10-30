@@ -9,3 +9,5 @@ __pycache__/
 *.tar.gz
 *.tgz
 *.7z
+RUN_RECORD.jsonl
+UPSTREAM_MARKER.txt
